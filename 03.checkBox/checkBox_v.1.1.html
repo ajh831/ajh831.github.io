@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CheckBox TextArea</title>
+    <style>
+        /* #aside {
+            float: left;
+        }
+        #section {
+            float: right;
+        } */
+    </style>
+</head>
+
+<body>
+    <!-- 
+        1. 테이블의 열로 구역을 나눈다.
+            1.1. 첫번째 컬럼에 input
+            1.2. 두번째 컬럼에 textarea
+        2. input에 클래스와 아이디를 준다.
+            2.1. 전체 input는 클래스를 통일한다.
+            2.2. 개별 input에 각각의 id를 준다.
+        3. 전체를 클릭하는 경우
+        4. 개별을 클릭하는 경우
+            4.1. 
+    -->
+    <table>
+        <tr>
+            <td>
+                <p style="display:inline;" class="all">
+                    <input type="checkbox" id="allCheck" onclick="checkClick(this.id)">
+                    전체
+                    <br>
+                    <p style="display:inline;" class="all basketball">
+                        <input type="checkbox" class="allCheck basketball" id="basket" onclick="checkClick(this.id)">
+                        농구
+                    </p><br>
+                    <p style="display:inline;" class="all volleyball">
+                        <input type="checkbox" class="allCheck volleyball" id="volley" onclick="checkClick(this.id)">
+                        배구
+                    </p><br>
+                    <p style="display:inline;" class="all soccer">
+                        <input type="checkbox" class="allCheck soccer" id="soc" onclick="checkClick(this.id)">
+                        축구
+                    </p><br>
+                    <p style="display:inline;" class="all baseball">
+                        <input type="checkbox" class="allCheck baseball" id="base" onclick="checkClick(this.id)">
+                        야구
+                    </p><br>
+                </p><br>
+            </td>
+            <td>
+                <textarea name="" id="txtArea" cols="30" rows="10"></textarea>
+            </td>
+        </tr>
+    </table>
+    <!--
+        전체 체크박스를 클릭시 나머지 체크박스가 체크되도록 수정해야됨
+        1. 전체 체크박스 true인 경우
+            1.1. 모든 체크박스를 true로 변경
+            1.2. 모든 체크박스 값을 추가 -> for문사용
+        2. 전체 체크박스 false인 경우
+            2.1. 모든 체크박스를 false로 변경
+            2.2. 모든 체크박스 값을 삭제
+    -->
+    <script>
+        function checkClick(id) {
+            var id = document.getElementById(id);
+            var parentId = id.parentElement.className;
+            console.log(id);
+            console.log(id.parentElement.className);
+            var result = id.checked;
+            // console.log(result);
+            // 전체 체크박스 클릭한경우
+            if(parentId == "all") {
+                var arr = document.getElementsByClassName(parentId);
+                // console.log(arr.length);
+                // console.log(arr[1]);
+                var txt ="";
+                for(i=1;i<arr.length;i++) {
+                    txt += arr[i].innerText;
+                }
+                // console.log(txt);
+                if(result == true) {
+                    document.getElementById("txtArea").value += txt;
+
+                } else {
+                    document.getElementById("txtArea").value = document.getElementById("txtArea").value.replace(txt, "");
+                }
+            } else {
+                var txt = document.getElementsByClassName(parentId)[0].innerText;
+                if(result == true) {
+                    // console.log(document.getElementsByClassName("basketball")[0].innerText);
+                    // console.log(txt);
+                    document.getElementById("txtArea").value += txt;
+                } else {
+                    // console.log(document.getElementById("txtArea").value);
+                    document.getElementById("txtArea").value = document.getElementById("txtArea").value.replace(txt, "");
+                    console.log(document.getElementById("txtArea").value.replace(txt, ""));
+                }
+            }
+        }
+    </script>
+</body>
+
+</html>

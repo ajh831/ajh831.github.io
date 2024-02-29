@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CheckBox TextArea</title>
+    <style>
+    </style>
+</head>
+
+<body>
+    <!-- 
+        1. 테이블의 열로 구역을 나눈다.
+            1.1. 첫번째 컬럼에 input checkbox
+            1.2. 두번째 컬럼에 textarea
+        2. input에 클래스와 아이디를 준다.
+            2.1. 전체 input는 클래스를 통일한다.
+            2.2. 개별 input에 각각의 id를 준다.
+        3. 전체를 클릭하는 경우
+            3.1. 전체 체크박스 true인 경우
+                3.1.1. 모든 체크박스를 true로 변경
+                3.1.2. 모든 체크박스 값을 추가 -> for문사용
+            3.2. 전체 체크박스 false인 경우
+                3.2.1. 모든 체크박스를 false로 변경
+                3.2.2. 모든 체크박스 값을 삭제
+        4. 개별을 클릭하는 경우
+            4.1. 전체 체크박스 true인 경우
+                4.1.1. 요소중 하나 체크 해제하는 경우(false)
+                    4.1.1.1. 전체 체크박스 체크를 해제(false)
+                    4.1.1.2. 해당하는 요소를 영역에서 삭제
+            4.2. 전체 체크박스 false인 경우
+                4.2.1. 요소중 하나 체크하는 경우(true)
+                    4.2.1.1. 해당하는 요소를 영역에 추가
+                4.2.1. 체크되어 있는 요소를 해제하는 경우(false)
+                    4.2.2.1. 해당하는 요소를 영역에서 삭제
+    -->
+    <table>
+        <tr>
+            <td>
+                <input id="all" class="allBox" type="checkbox" value="전체" onclick="checkClick(this.id)">전체
+            </td>
+            <td rowspan="5">
+                <textarea id="txtArea" cols="30" rows="10"></textarea>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <input id="basket" class="allBox" type="checkbox" value="농구" onclick="checkClick(id)">농구
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <input id="volley" class="allBox" type="checkbox" value="배구" onclick="checkClick(id)">배구
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <input id="soc" class="allBox" type="checkbox" value="축구" onclick="checkClick(id)">축구
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <input id="base" class="allBox" type="checkbox" value="야구" onclick="checkClick(id)">야구
+            </td>
+        </tr>
+    </table>
+
+
+    <script>
+        var txtArr = [];
+        
+        function checkClick(id) {
+            var element = document.getElementById(id);
+            var id = element.id;
+            var className = element.className;
+            var val = element.value;
+            var arr = document.getElementsByClassName(className);
+
+            var txtAreaElement = document.getElementById("txtArea")
+
+
+            // 전체 클릭한경우
+            if (id == "all") {
+                txtArr = [];
+                txtAreaElement.value = null;
+                // 전체 체크 한 경우
+                if (arr[0].checked == true) {
+                    for (i = 1; i < arr.length; i++) {
+                        arr[i].checked = true;
+                        txtArr.push(arr[i].value);
+                    }
+
+                    for (i = 0; i < txtArr.length; i++) {
+                        txtAreaElement.value += (i == 0 ? txtArr[0] : (" " + txtArr[i]));
+                    }
+                } else {
+                    // 전체 체크해제 한 경우
+                    for (i = 1; i < arr.length; i++) {
+                        arr[i].checked = false;
+                        txtAreaElement.value = null;
+                    }
+                }
+            } else {
+                txtAreaElement.value = null;
+                if (element.checked == true) {
+                    // console.log(element);
+                    txtArr.push(element.value);
+
+                    for (i = 0; i < txtArr.length; i++) {
+                        txtAreaElement.value += (i == 0 ? txtArr[0] : (" " + txtArr[i]));
+                    }
+
+                } else {
+                    arr[0].checked = false;
+                    // console.log(txtArr);
+                    console.log(element.value);
+                    for(i=0;i<arr.length;i++) {
+                        if(txtArr[i] == element.value) {
+                            txtArr.splice(i,1);
+                            console.log(txtArr);
+                        }
+                    }
+                    for(i=0;i<txtArr.length;i++) {
+                        txtAreaElement.value += (i == 0 ? txtArr[0] : (" " + txtArr[i]));
+                    }
+                }
+            }
+
+            // 모든 요소 클릭시 전체 체크로 변하기
+            var cnt = 0;
+            for(i=1;i<arr.length;i++) {
+                if(arr[i].checked == true) {
+                    cnt++;
+                }
+            }
+            if(cnt == (arr.length-1)) {
+                arr[0].checked = true;
+            }
+        }
+    </script>
+
+
+</body>
+
+</html>
