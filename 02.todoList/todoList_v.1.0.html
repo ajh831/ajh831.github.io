@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Todo List</title>
+    <style>
+        li::marker {
+            content: '📌';
+        }
+
+        /* .grab {} */
+
+        #marg {
+            width: 50%;
+            height: 50%;
+            background-color: rgb(255, 255, 216);
+
+            border: 10px solid pink;
+            margin: 10px;
+            padding: 30px;
+        }
+
+        #title {
+            color: rgb(252, 127, 148);
+            /* color: cadetblue; */
+            text-decoration-line: underline;
+            text-decoration-style: double;
+            text-decoration-color: rgb(247, 84, 111);
+        }
+
+
+        li {
+            background-color: rgb(255, 234, 238);
+            cursor: -webkit-grab; cursor: grab;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="marg">
+        <h1 style="display:inline;">&#127800;</h1>
+        <h1 id="title" style="display:inline;">Todo list</h1>
+        <br><br>
+        <input id="todo" size=20% type="text" placeholder="오늘의 할일">
+        <button id="click" onclick='clickBtn()'>입력</button>
+        <div id="list">
+            <ul>
+            </ul>
+        </div>
+        <br>
+    </div>
+
+    <script>
+        // console.log(document.getElementById("list").innerText + '<li>');
+
+        // [값 추가하기]
+        // 1. 버튼 눌렀을때 값을 가져오게한다.
+        // 2. 가져온 값을 영역안으로 보낸다.
+        // 3. 한글로 글쓴 부분을 지워서 깨끗하게 만든다.
+
+        /** 클릭했을 때 값을 가져오는 함수*/
+        var cnt = 0;
+        function clickBtn() {
+            cnt++;
+            // console.log(cnt);
+            var txt = document.getElementById("todo").value;
+            // console.log(txt);
+            // style="display:inline;"
+            // <input type="checkbox" id="chBox_' + cnt + '">
+            var element = '<li id=li_' + cnt + ' onclick="clickTxt(this.id)">' + txt + '</li>';
+            // console.log(element);
+            // console.log(document.getElementById("list").value);
+            document.getElementById("list").innerHTML += element;
+            document.getElementById("todo").value = null;
+        }
+
+        // [글씨 눌렀을 때 지우기]
+        // 1. 누르고 싶은 태그에 id로 번호를 넣기?
+        //    1.1 버튼 누를때마다 숫자를 올리도록해서 가져오기
+        // 2. 클릭하면 id를 가져오게 하기 - onclick
+        // 3. id를 가지고 있는 HTML을 null로 변경
+        //    3.1 리스트 표기까지 없애야됨
+        function clickTxt(id) {
+            var id = id;
+            console.log(id);
+            // var regex = /[^0-9]/g;
+            // id.replace("");
+            // var num = id.replace(regex, "");
+            // console.log(num);
+            // console.log(document.getElementById(id).outerHTML);
+            document.getElementById(id).outerHTML = null;
+            // console.log('chBox_' + num);
+            // console.log(document.getElementByid('chBox_' + num).outerHTML);
+            // document.getElementByid('chBox_'+num).outerHTML = null;
+        }
+    </script>
+</body>
+
+</html>
