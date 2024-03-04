@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        li::marker {
+            content: '📌';
+        }
+
+        /* .grab {} */
+
+        #marg {
+            width: 50%;
+            height: 50%;
+            background-color: rgb(255, 255, 216);
+
+            border: 10px solid pink;
+            margin: 10px;
+            padding: 30px;
+        }
+
+        #title {
+            color: rgb(252, 127, 148);
+            /* color: cadetblue; */
+            text-decoration-line: underline;
+            text-decoration-style: double;
+            text-decoration-color: rgb(247, 84, 111);
+        }
+
+
+        li {
+            background-color: rgb(255, 234, 238);
+            cursor: -webkit-grab;
+            cursor: grab;
+        }
+
+        #todo {
+            width: 70%;
+        }
+
+        span {
+            background-color: white;
+        }
+
+        #finish {
+            position: relative;
+            right: -75%;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div id="marg">
+        <h1 style="display:inline;">&#127800;</h1>
+        <h1 id="title" style="display:inline;">Todo list</h1>
+        <br><br>
+        <input id="todo" size=20% type="text" placeholder="오늘의 할일" onkeypress='clickBtn(event)'>
+        <!--  onkeypress="alert(this.value)" -->
+        <button id="click" onclick='clickBtn(this)'>입력</button>
+        <table id="tableID">
+        </table>
+        <br>
+        <span id="doID"></span><br><br>
+        <input type="button" id="finish" onclick="finishBtn(this)" value="DONE"></input>
+    </div>
+
+    <script>
+        // ★ 배열을 활용해서 진행할 것 ★
+        // 1. 빈 배열을 생성해두기
+        // 2. input에 내용이 들어오면 배열에 추가하기
+        // 2.1. 입력을 누른 경우
+        // 2.1.1. 배열의 제일 뒤에 요소 추가
+        // 2.1.2. 화면에 출력
+        // 2.2. 엔터를 누른 경우
+        // 2.2.1. 배열의 제일 뒤에 요소 추가
+        // 2.2.2. 화면에 출력
+        // 3. 투두 내용 클릭하면 해당 내용 삭제하기
+        // 3.1. 배열에서 삭제하기
+        // 3.1.1. li에서 클릭했을 때 value값을 가지고오기
+        // 3.1.2. value와 동일한 배열의 요소를 찾기
+        // 3.1.2.1. 동일한 요소의 인덱스 추출하기
+        // 3.1.2.2. 삭제하기
+
+        // 추가
+        // 실천 했는지 안했는지 확인하기 위해서 체크박스를 추가
+        // li태그와 나란히 작성할 수 없으므로 table태그로 구분
+        // 4. 테이블 태그로 목록을 감싼다.
+        // 4.1. 입력할때마다 테이블의 행이 증가하도록 작성
+
+        // 1. 빈 배열을 생성해두기
+        let listArr = []; // 전역
+        let num = 0;
+        let doItCnt = 0; // 실천한 개수 확인
+
+        // 2. input에 내용이 들어오면 배열에 추가하기
+        function clickBtn(element) {
+            // console.log(element.keyCode);
+            if(element.keyCode == 13 || element.id == "click") {
+                addList();
+                showList(num++);
+                document.getElementById("todo").value = null;
+            }
+        }
+
+        /** 배열에 추가하는 함수*/
+        function addList() {
+            listArr.push(document.getElementById("todo").value);
+        }
+
+        /** 배열에서 삭제 및 태그 삭제하는 함수*/
+        function removeList(element) {
+            let val = element.innerText;
+            let idx = listArr.indexOf(val);
+            listArr.splice(idx, 1); // 배열에서 요소 삭제
+
+            element.parentNode.parentNode.innerHTML = null; // 한 줄을 삭제해야 되기때문에 tr td li순 이므로 두번 올라가야 됨
+        }
+
+        let doItElement = document.getElementById("doID");
+
+
+        /** 화면에 띄우는 함수*/
+        function showList(num) {
+            let tableTag = document.getElementById("tableID");
+            // console.log(tableTag);
+            tableTag.innerHTML += `<tr id="tr_${num}"><td><li onclick="removeList(this)">${listArr[listArr.length - 1]}</li></td>
+                <td><input type="checkbox" unchecked onclick="doIt(this)"></td></tr>`;
+            doItCnt = 0;
+            doItElement.innerText = null;
+        }
+
+        /** 실행 완료 개수 확인하는 함수*/
+        function doIt(element) {
+            let elCh = element.checked;
+            console.log(elCh);
+
+
+            if (elCh == true) {
+                // console.log(doItElement);
+                doItElement.innerText = `실행 완료 : ${++doItCnt}`;
+            } else {
+                doItElement.innerText = null;
+                doItElement.innerText = `실행 완료 : ${--doItCnt}`;
+
+                if (doItCnt == 0) {
+                    doItElement.innerText = null;
+                }
+            }
+        }
+
+        /** todo 다 적었으면 입력 완료로 더이상 입력 할 수 없게 만드는 버튼*/
+        function finishBtn(element) {
+            // console.log(element.value);
+            if(element.value == "DONE") {
+                element.value = "OPEN";
+                document.getElementById("click").disabled = true;
+            } else if(element.value == "OPEN") {
+                element.value = "DONE";
+                document.getElementById("click").disabled = false;
+            }
+            
+        }
+
+    </script>
+</body>
+
+</html>
