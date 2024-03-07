@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        * {
+            margin: 0.1em;
+            padding: 0.1em;
+        }
+        img {
+            width: 80px;
+            height: 120px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div>
+            <button id="hide">뒤집기</button>
+            <button id="show">힌트보기</button>
+            <button id="shuffle">섞기</button>
+            <span id="scoreBoard">점수 : </span>
+        </div>
+        <div class="card" id="board">
+            <!-- <img src="../../00.img/card_img/1.png" alt=""> -->
+            <!-- <img src="../../00.img/card_img/back.png" alt=""> -->
+        </div>
+    </div>
+    <script>
+        let cardArr = [];
+        let defaultpath = '../../00.img/card_img/';
+        let fileFormat = '.png';
+        let backPath = '../../00.img/card_img/back.png';
+        let compareArr = [];
+        let score = 0;
+
+        window.onload = function() {
+            let flipBtn = document.getElementById('hide');
+            let suffleBtn = document.getElementById('shuffle');
+            let flipAllBtn = document.getElementById('show');
+            let cardCheck = document.getElementsByClassName('card');
+            
+            // 1. 배열 초기화
+            boardCard();
+            
+            // 2. 카드 보여주기
+            suffleCard();
+            
+            // 3. 카드에 이벤트 등록
+            suffleBtn.onclick = suffleCard;
+            flipAllBtn.onclick = filpAllCard;
+            // for(let i=1; i<cardClick.length;i++) {
+                //     cardCheck[i].onclick = cardClick;
+                // }
+        }
+
+        /** 배열 초기화하는 함수 */
+        function boardCard() {
+            for(let i=0; i<52; i++) {
+                let cardFile = `${defaultpath}${i}${fileFormat}`;
+                cardArr.splice(i,1,cardFile);
+            }
+
+            // suffleCard();/
+        }
+
+        /** 카드 배열을 섞어주는 함수 */
+        function suffleCard() {
+            compareArr = [];
+
+            // alert('클릭');
+            cardArr.sort(function(a,b){
+                return Math.random() - 0.5;
+            });
+
+            // for(let i=0;i<cardArr.length;i++) {
+            //     console.log(cardArr[i]);
+            // }
+
+            showCard();
+        }
+
+        /** 카드 번호 자르기 함수 */
+        function subStringCardNum(card) {
+            return card.substring(defaultpath.length).split('.')[0];
+        }
+
+        /** 카드 보여주기 함수 */
+        function showCard() {
+            board.innerHTML = null;
+            for(let i=0;i<cardArr.length;i++) {
+                let idNum = subStringCardNum(cardArr[i])
+                console.log(idNum);
+                // board.innerHTML += `<img id=${idNum} src=${cardArr[i]}>`;
+                board.innerHTML += `<img class="card" id=${idNum} src=${backPath} value=false onclick='cardClick(this)'>`;
+            }
+        }
+
+
+        /** 카드가 앞면이면 true, 아니면 false */
+        function isFront(card) {
+            let val = card.getAttribute("value");
+            if (val == false) return false;
+        }
+
+        /** 카드를 뒤집는 함수 */
+        function flip(card) {
+            let cardID = card.id;
+            card.setAttribute("src",cardArr[cardID])
+            card.setAttribute("value", true);
+            compareArr.push(cardArr[cardID]);
+            // console.log(card);
+        }
+
+        /** 선택한 카드를 뒤집는 함수 */
+        function cardClick(card) {
+            // console.dir(e);
+            // 1. 카드가 앞면인지 확인. 앞면이면 return
+            if(isFront(card)) return;
+
+            // 2. 카드를 뒤집는다.
+            flip(card);
+
+            // 3. 두번째 카드면, 첫번째 카드와 비교
+            //    첫번째 카드면 비교할 필요가 없음 (return)
+            compareCard(card);
+        }
+
+        /** 두가지의 카드를 비교하는 함수*/
+        function compareCard(card) {
+            // 첫번째 카드면 비교할 필요가 없음
+            // 두번째 카드면 첫번째 카드와 비교해야 됨
+            if(compareArr.length % 2 == 0){ 
+                // console.log("짝");
+                // 첫번째 카드와 값 비교하기
+                valueCompare(card);
+            }
+        }
+
+        function valueCompare(card) {
+            console.log("카드비교시작");
+            console.log(compareArr);
+            let firstCard = subStringCardNum(compareArr[compareArr.length-2]);
+            let secondCard = subStringCardNum(compareArr[compareArr.length-1]);
+            console.log(`첫번째카드 ${firstCard}`);
+            console.log(`두번째카드 ${secondCard}`);
+
+            // 색깔 비교
+            if((firstCard%13) == (secondCard%13) && (((firstCard/13).toFixed() + 1) % 2) == (((secondCard/13).toFixed() + 1) % 2)) {
+                // console.log("숫자 맞아요~");
+                ++score;
+                document.getElementById('scoreBoard').innerText += score;
+                console.log(score);
+            } else {
+                compareArr.pop();
+                compareArr.pop();
+                
+                card.setAttribute("value", 'false');
+                setTimeout(function() {
+                    let fc = document.getElementById(firstCard);
+                    console.log(fc);
+                    fc.setAttribute("src", backPath);
+                    card.setAttribute("src", backPath);
+                }, 900);
+            }
+        }
+
+
+        /** 카드를 보여주는 함수 */
+        function filpAllCard() {
+            let imgTag;
+            for(let i=0;i<cardArr.length;i++) {
+                imgTag = document.getElementById(i);
+                imgTag.setAttribute('src', cardArr[i]);
+            }
+            
+            setTimeout(function() {
+                for(let i=0;i<cardArr.length;i++) {
+                    imgTag = document.getElementById(i);
+                    if(imgTag.getAttribute("value") == 'false') {
+                        imgTag.setAttribute('src', backPath);
+                    }
+                }
+            },2000);
+        }
+
+    </script>
+</body>
+</html>
