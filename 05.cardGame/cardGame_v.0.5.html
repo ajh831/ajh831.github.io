@@ -132,6 +132,12 @@
             showAllBtn.onclick = hintCard;
             suffleBtn.onclick = suffleBtnFc;
         }
+        
+        /** 플레이어 입력받기 */
+        // 1. 이름을 입력받아서 저장
+        // 2. 시간과 점수를 저장
+
+
         /** 게임시작 난이도 고르는 함수*/
         function gameLevel(startGame) {
             for(let i=0; i<startGame.length;i++) {
@@ -162,8 +168,8 @@
             let element = e.target;
 
             counter = setInterval(function() {
-                countDown(element)}, 1000);
-                // countDown(element)}, 10);
+                // countDown(element)}, 1000);
+                countDown(element)}, 10);
             startDisplay.style.display = 'none';
             element.setAttribute('value', true);
 
@@ -183,6 +189,9 @@
                     document.getElementById('scoreBoard').innerText = '';
                     blockBtn(playBtn);
                     return;
+                } 
+                if(gameTime>=0&&gameTime<4) {
+                    document.getElementById('scoreBoard').style.color = "red";
                 }
             }
             document.getElementById('scoreBoard').innerText = `카드를 기억하세요 : ${gameTime--}`;
@@ -230,6 +239,7 @@
                 playBtn[2].disabled = false;
                 return;
             }
+            playBtn[1].style.pointerEvents = 'none';
             containerDisplay.style.pointerEvents = 'none';
             suffleCard();
             setTimeout(function() {
@@ -237,6 +247,7 @@
                     imgTag = document.getElementById(i);
                     let cardObject = cardArrReturn(imgTag, cardArr);
                     if(cardObject.val == false) {
+                    playBtn[1].style.pointerEvents = 'auto';
                         imgTag.setAttribute('src', backPath);
                     }
             }},1500);
@@ -297,6 +308,7 @@
                 playBtn[1].disabled = false;
                 return;
             }
+            playBtn[1].style.pointerEvents = 'none';
             containerDisplay.style.pointerEvents = 'none';
             hintNum--;
             playBtn[1].innerText = `힌트보기\n(기회:${hintNum}번)`
@@ -314,6 +326,7 @@
                     let cardObject = cardArrReturn(imgTag, cardArr);
                     if(cardObject.val == false) {
                         imgTag.setAttribute('src', backPath);
+                        playBtn[1].style.pointerEvents = 'auto';
                     }
                 }},2000);
             containerDisplay.style.pointerEvents = 'auto';
@@ -371,7 +384,7 @@
                 compareArr.splice(0,2);
                 return;
             }
-
+            document.getElementById('scoreBoard').style.color = "black";
             // 색깔 비교
             if(cardLevel== 'level1' || cardLevel == 'level2') {
                 // console.log(cardLevel);
