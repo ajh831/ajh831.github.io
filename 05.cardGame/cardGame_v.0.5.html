@@ -94,6 +94,7 @@
         let flipButtonClick = false; // 뒤집기 버튼을 둘러야지 카드가 뒤집혀서 게임을 할 수 있음
         let startDisplay = document.getElementsByClassName('startWindow')[0]; // 게임시작 화면 요소 가져오기
         let containerDisplay = document.getElementsByClassName('container')[0]; // 게임플레이 화면 요소 가져오기
+        let finishDisplay = document.getElementsByClassName('finishWindow')[0]; // 게임종료 화면 요소 가져오기
         let playBtn = document.getElementsByClassName("playBtn"); // 각 버튼들 요소 가져오기
         let shuffleNum = 5; // 섞을 수 있는 한도
         let hintNum = 3; // 힌트 보기 한도
@@ -112,7 +113,7 @@
             playBtn[2].innerText = `섞기\n(기회:${shuffleNum}번)`
             
             containerDisplay.style.display = 'none';
-
+            finishDisplay.style.display = 'none';
             // 게임 시작
             // startGame.onclick = gamePlay;
             gameLevel(startGame);
@@ -136,9 +137,9 @@
                 let element = e.target;
                 if(element.id == 'level1') {
                     cardsNumber = 26;
-                    gameTime = 15;
-                    shuffleNum = 10;
-                    hintNum = 5;
+                    gameTime = 5;
+                    shuffleNum = 3;
+                    hintNum = 1;
                 } else {
                     cardsNumber = 52;
                 }
@@ -160,6 +161,7 @@
 
             counter = setInterval(function() {
                 countDown(element)}, 1000);
+                // countDown(element)}, 10);
             startDisplay.style.display = 'none';
             element.setAttribute('value', true);
 
@@ -235,7 +237,7 @@
                     if(cardObject.val == false) {
                         imgTag.setAttribute('src', backPath);
                     }
-            }},2000);
+            }},1500);
             shuffleNum--;
             playBtn[2].innerText = `섞기\n(기회:${shuffleNum}번)`
             containerDisplay.style.pointerEvents = 'auto';
@@ -252,12 +254,25 @@
 
         /**게임을 종료하는 함수*/
         function finishGame() {
+            finishDisplay.style.display = 'block';
             finishButtonClick = true;
             flipAll();
-
-            setTimeout(function () {
+            gameTime = 3;
+            
+            counter = setInterval(function() {
+                finishDisplay.lastElementChild.innerText = `게임을 종료합니다.\n${gameTime--}`;
+                shutDown(gameTime)}, 3000);
+                
+        }
+        
+        /** 게임 종료 카운트 다운*/
+        function shutDown(gameTime) {
+            if(gameTime < 0) {
+                finishDisplay.style.display = 'none';
+                clearInterval(counter);
                 location.reload();
-            }, 2100);
+                return;
+            }
         }
 
         /** 카드 전부 뒤집는 함수 */
@@ -381,6 +396,10 @@
                 }
             }
             compareArr.splice(0,2);
+
+            if(score == (cardsNumber/2)) {
+                finishGame();
+            }
         }
 
         /** 선택한 카드가 false면 뒤집어 주는 함수 */
