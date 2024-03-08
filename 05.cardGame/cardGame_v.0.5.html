@@ -29,11 +29,18 @@
         #startBtn {width: 40%; height: 10%; border: 1px black solid; background-color:whitesmoke; position: absolute; left:50%; top:50%; transform: translate(-50%,-50%);}
         .container {pointer-events : auto;}
         .btnClass {width: 100%; height: 400px; display: inline; left:50%; top:50%; flex-direction: row; align-items: center; justify-content: space-evenly;}
-        .playBtn {width: 20%; height: 10%; border: 1px black solid; background-color:gainsboro;}
+        .playBtn {width: 20%; height: 10%; background-color:gainsboro;}
         button {
-            border: 1px black solid;
+            /* border: 1px black solid; */
             border-radius: 50px;
             font-size: 0.8em;
+            border-radius: 50px;
+            moz-transition: all .4s ease-in-out;
+            -o-transition: all .4s ease-in-out;
+            -webkit-transition: all .4s ease-in-out;
+            transition: all .4s ease-in-out;
+            background-image: linear-gradient(to right, #25aae1, #40e495, #30dd8a, #2bb673);
+            box-shadow: 0 4px 15px 0 rgba(49, 196, 190, 0.75);
         }
 
         button:hover {
@@ -101,8 +108,8 @@
             let showAllBtn = document.getElementById('show');
             let cardCheck = document.getElementsByClassName('card');
             let board = document.getElementById('board');
-            playBtn[1].innerText = `힌트보기(기회:${hintNum}번)`
-            playBtn[2].innerText = `섞기(기회:${shuffleNum}번)`
+            playBtn[1].innerText = `힌트보기\n(기회:${hintNum}번)`
+            playBtn[2].innerText = `섞기\n(기회:${shuffleNum}번)`
             
             containerDisplay.style.display = 'none';
 
@@ -135,8 +142,8 @@
                 } else {
                     cardsNumber = 52;
                 }
-                playBtn[1].innerText = `힌트보기(기회:${hintNum}번)`
-                playBtn[2].innerText = `섞기(기회:${shuffleNum}번)`
+                playBtn[1].innerText = `힌트보기\n(기회:${hintNum}번)`
+                playBtn[2].innerText = `섞기\n(기회:${shuffleNum}번)`
                 cardLevel = element.id;
                 gamePlay(e);
                 console.log(`카드 개수:${cardsNumber}`);
@@ -230,7 +237,7 @@
                     }
             }},2000);
             shuffleNum--;
-            playBtn[2].innerText = `섞기(기회:${shuffleNum}번)`
+            playBtn[2].innerText = `섞기\n(기회:${shuffleNum}번)`
             containerDisplay.style.pointerEvents = 'auto';
         }
 
@@ -275,7 +282,7 @@
             }
             containerDisplay.style.pointerEvents = 'none';
             hintNum--;
-            playBtn[1].innerText = `힌트보기(기회:${hintNum}번)`
+            playBtn[1].innerText = `힌트보기\n(기회:${hintNum}번)`
 
             let imgTag;
             for (let i = 0; i < cardArr.length; i++) {
