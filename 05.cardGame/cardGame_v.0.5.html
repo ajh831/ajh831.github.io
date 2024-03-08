@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Hi+Melody&display=swap" rel="stylesheet">
+    <style>
+        /* css 초기화 */
+        * {margin: 0; padding: 0; border: 0; font-family: "Hi Melody", sans-serif; font-size: 1.2em;}
+        ul {list-style: none;}
+        a {text-decoration: none;}
+
+        img {
+            width: 80px;
+            height: 120px;
+            float: left;
+            margin-left: 0.5%;
+            margin-top: 1%;
+            /* object-fit: cover; */
+            cursor: pointer;
+        }
+
+        body {width: 100vw; height: 100vh; position: relative; background: url('https://ajh831.github.io/00.img/backgroud.jpg'); background-size: 100% 100%; background-position: center;}
+        .startWindow {width: 90%; height: 90%; position: absolute; left:50%; top:50%; transform: translate(-50%,-50%);}
+        section {width: 50%; height: 50%; display: inline-flex; flex-direction: column;
+            float: left; position: absolute; left:50%; top:50%; transform: translate(-50%,-50%); justify-content: space-evenly;}
+        #startBtn {width: 20%; height: 10%; border: 1px black solid; font-size: 0.8em; background-color:whitesmoke; position: absolute; left:50%; top:50%; transform: translate(-50%,-50%);}
+        .container {pointer-events : auto;}
+        .btnClass {width: 100; height: 400px; display: inline; left:50%; top:50%; flex-direction: row; align-items: center; justify-content: space-evenly;}
+        .playBtn {width: 20%; height: 10%; border: 1px black solid; font-size: 0.8em; background-color:gainsboro;}
+        button {
+            border: 1px black solid;
+        }
+
+        button:hover {
+            cursor: pointer;
+        }
+        button:active {
+            cursor: grab;
+        }
+
+        span {background-color: white; position: absolute; left:70%; transform: translate();}
+        /* span {background-color: white; position: absolute; left:50%; transform: translate(-50%);} */
+        .board {width: 70%; height: 70%; position: absolute; left:50%; top:50%; transform: translate(-50%,-50%);}
+        /* img {} */
+    </style>
+</head>
+<body>
+    <div class="startWindow">
+        <section>
+            <button class="startBtn" id="level3" value=false>게임시작(난이도:상)</button>
+            <button class="startBtn" id="level2" value=false>게임시작(난이도:중)</button>
+            <button class="startBtn" id="level1" value=false>게임시작(난이도:하)</button>
+        </section>
+    </div>
+    <div class="container">
+        <div class="btnClass">
+            <!-- <button class="playBtn" id="hide" disabled>뒤집기</button> -->
+            <button class="playBtn" id="finish" disabled>게임종료</button>
+            <button class="playBtn" id="show" disabled></button>
+            <button class="playBtn" id="shuffle" value=false; disabled></button>
+            <span id="scoreBoard"></span>
+        </div>
+        <div id="board">
+            
+        </div>
+    </div>
+    <script>
+        let gameTime = 10; // 게임시작 시 카드를 볼 수 있는 시간(카운트다운)
+        let counter; // setInterval함수 적용
+        let cardArr = []; // 카드 정보를 담는 배열
+        let defaultpath = 'https://ajh831.github.io/00.img/card_img/'; // 이미지가 담긴 경로 기본값
+        let fileFormat = '.png'; // 파일 확장자
+        let backPath = 'https://ajh831.github.io/00.img/card_img/back.png'; // 뒷배경 이미지 경로
+        let compareArr = []; // 카드 선택을 비교하기 위한 배열
+        let score = 0; // 짝을 맞춘 점수
+        let finishButtonClick = false; // 뒤집기 버튼을 둘러야지 카드가 뒤집혀서 게임을 할 수 있음
+        let flipButtonClick = false; // 뒤집기 버튼을 둘러야지 카드가 뒤집혀서 게임을 할 수 있음
+        let startDisplay = document.getElementsByClassName('startWindow')[0]; // 게임시작 화면 요소 가져오기
+        let containerDisplay = document.getElementsByClassName('container')[0]; // 게임플레이 화면 요소 가져오기
+        let playBtn = document.getElementsByClassName("playBtn"); // 각 버튼들 요소 가져오기
+        let shuffleNum = 5; // 섞을 수 있는 한도
+        let hintNum = 3; // 힌트 보기 한도
+        let cardsNumber = 52; // 카드의 개수를 정하기 위한 변수
+        let cardLevel = 'level1';
+        
+        window.onload = function() {
+            let startGame = document.getElementsByClassName('startBtn');
+            // let flipBtn = document.getElementById('hide');
+            let finishBtn = document.getElementById('finish');
+            let suffleBtn = document.getElementById('shuffle');
+            let showAllBtn = document.getElementById('show');
+            let cardCheck = document.getElementsByClassName('card');
+            let board = document.getElementById('board');
+            playBtn[1].innerText = `힌트보기(기회:${hintNum}번)`
+            playBtn[2].innerText = `섞기(기회:${shuffleNum}번)`
+            
+            containerDisplay.style.display = 'none';
+
+            // 게임 시작
+            // startGame.onclick = gamePlay;
+            gameLevel(startGame);
+
+            // 1. 배열 초기화
+            boardCard();
+
+            // 2. 배열 화면에 보여주기
+            // suffleCard();
+
+            // 3. 배열 뒤집기
+            // flipBtn.onclick = flipAll;
+            finishBtn.onclick = finishGame;
+            showAllBtn.onclick = hintCard;
+            suffleBtn.onclick = suffleBtnFc;
+        }
+        /** 게임시작 난이도 고르는 함수*/
+        function gameLevel(startGame) {
+            for(let i=0; i<startGame.length;i++) {
+                startGame[i].onclick = function(e) {
+                let element = e.target;
+                if(element.id == 'level1') {
+                    cardsNumber = 26;
+                    gameTime = 15;
+                    shuffleNum = 10;
+                    hintNum = 5;
+                } else {
+                    cardsNumber = 52;
+                }
+                playBtn[1].innerText = `힌트보기(기회:${hintNum}번)`
+                playBtn[2].innerText = `섞기(기회:${shuffleNum}번)`
+                cardLevel = element.id;
+                gamePlay(e);
+                console.log(`카드 개수:${cardsNumber}`);
+            };
+            }
+        }
+
+        /** 게임시작 버튼을 눌렀을 때 화면이 전환되는 함수*/
+        function gamePlay(e) {
+            console.log('확인확인 :' + cardsNumber);
+            boardCard(cardsNumber);
+
+            let element = e.target;
+
+            counter = setInterval(function() {
+                countDown(element)}, 1000);
+            startDisplay.style.display = 'none';
+            element.setAttribute('value', true);
+
+            // 카운트 다운하는 함수
+            countDown(element);
+            containerDisplay.style.display = 'block';
+        }
+        
+        /** 카운트 다운을 실행하는 함수 */
+        function countDown(element) {
+            if(element.value === false) {
+                return;
+            } else {
+                if(gameTime < 0) {
+                    clearInterval(counter);
+                    flipAll();
+                    document.getElementById('scoreBoard').innerText = '';
+                    blockBtn(playBtn);
+                    return;
+                }
+            }
+            document.getElementById('scoreBoard').innerText = `카드를 기억하세요 : ${gameTime--}`;
+        }
+
+        /** 버튼 못누르게 하는 함수*/
+        function blockBtn(btn) {
+            for(let i=0;i<btn.length;i++) {
+                if(btn[i].disabled == true) {
+                    btn[i].disabled = false;
+                }
+            }
+        }
+
+        /** 배열 초기화하는 함수 */
+        function boardCard() {
+            cardArr = [];
+            console.log('배열초기화 : ' + cardsNumber);
+            for(let i=0; i<cardsNumber; i++) {
+                console.log(i);
+                let cardObj = {};
+                let cardPath = `${defaultpath}${i}${fileFormat}`;
+                cardObj.id = i;
+                cardObj.cardPath = cardPath;
+                cardObj.val = false;
+                cardObj.color = ((Math.floor(i/13) + 1) % 2 == 1)?"red":"black";
+                cardObj.number = i%13;
+                cardArr.push(cardObj); // 배열에 id 맞춰서 담기
+            }
+            console.log('배열길이 : ' + cardArr.length);
+            suffleCard();
+        }
+
+        /** 카드 배열을 섞어주는 함수 */
+        function suffleCard(e) {
+            cardArr.sort(function(a,b){
+                return Math.random() - 0.5;
+            });
+
+            showCard();
+        }
+
+        function suffleBtnFc() {
+            if(shuffleNum == 0) {
+                playBtn[2].disabled = false;
+                return;
+            }
+            containerDisplay.style.pointerEvents = 'none';
+            suffleCard();
+            setTimeout(function() {
+                for(let i=0;i<cardArr.length;i++) {
+                    imgTag = document.getElementById(i);
+                    let cardObject = cardArrReturn(imgTag, cardArr);
+                    if(cardObject.val == false) {
+                        imgTag.setAttribute('src', backPath);
+                    }
+            }},2000);
+            shuffleNum--;
+            playBtn[2].innerText = `섞기(기회:${shuffleNum}번)`
+            containerDisplay.style.pointerEvents = 'auto';
+        }
+
+        /** 카드 보여주기 함수 */
+        function showCard() {
+            let board = document.getElementById('board');
+            board.innerHTML = null;
+            for(let i=0;i<cardArr.length;i++) {
+                board.innerHTML += `<img class="card" id=${cardArr[i].id} src=${cardArr[i].cardPath} onclick='cardClick(this)'>`;
+            }
+        }
+
+        /**게임을 종료하는 함수*/
+        function finishGame() {
+            finishButtonClick = true;
+            flipAll();
+
+            setTimeout(function () {
+                location.reload();
+            }, 2100);
+        }
+
+        /** 카드 전부 뒤집는 함수 */
+        function flipAll() {
+            flipButtonClick = true;
+            let cardBoard = document.getElementsByClassName('card');
+            if(finishButtonClick == true) {
+                console.log('게임 종료')
+                containerDisplay.style.pointerEvents = 'none';
+                return;
+            }
+            for(let i=0;i<cardBoard.length; i++) {
+                cardBoard[i].setAttribute('src', backPath);
+            }
+        }
+
+        /** 카드를 보여주는 힌트 함수 */
+        function hintCard() {
+            if(hintNum == 0) {
+                playBtn[1].disabled = false;
+                return;
+            }
+            containerDisplay.style.pointerEvents = 'none';
+            hintNum--;
+            playBtn[1].innerText = `힌트보기(기회:${hintNum}번)`
+
+            let imgTag;
+            for (let i = 0; i < cardArr.length; i++) {
+                imgTag = document.getElementById(i);
+                let cardObject = cardArrReturn(imgTag, cardArr);
+                imgTag.setAttribute('src', cardObject.cardPath);
+            }
+            
+            setTimeout(function() {
+                for(let i=0;i<cardArr.length;i++) {
+                    imgTag = document.getElementById(i);
+                    let cardObject = cardArrReturn(imgTag, cardArr);
+                    if(cardObject.val == false) {
+                        imgTag.setAttribute('src', backPath);
+                    }
+                }},2000);
+            containerDisplay.style.pointerEvents = 'auto';
+        }
+
+        /** 카드가 앞면이면 true, 아니면 false */
+        function isFront(card) {
+            let val = card.val;
+            if (val == false) return false;
+        }
+
+        /** 카드를 뒤집는 함수 */
+        function clickflip(card) {
+            let cardObject = {obj:cardArrReturn(card, cardArr)};
+            card.setAttribute("src",cardObject.obj.cardPath);
+            cardObject.imgTag = card;
+            compareArr.push(cardObject);
+
+        }
+
+        /** 선택한 카드를 뒤집는 함수 */
+        function cardClick(card) {
+            // 1. 카드가 앞면인지 확인. 앞면이면 return
+            if(flipButtonClick == true) {
+                if(isFront(card)) return;
+
+                // 2. 카드를 뒤집는다.
+                clickflip(card);
+
+                // 3. 두번째 카드면, 첫번째 카드와 비교
+                //    첫번째 카드면 비교할 필요가 없음 (return)
+                compareCard(compareArr);
+            }
+        }
+
+        /** 두가지의 카드를 비교하는 함수*/
+        function compareCard(compareArr) {
+            // 첫번째 카드면 비교할 필요가 없음
+            // 두번째 카드면 첫번째 카드와 비교해야 됨
+            if (compareArr.length % 2 == 0) {
+                // 첫번째 카드와 값 비교하기
+                valueCompare(compareArr);
+            }
+        }
+
+        function valueCompare(compareArr) {
+            console.log("카드비교시작");
+            let firstCard = compareArr[0];
+            let secondCard = compareArr[1];
+
+            if(firstCard.obj === secondCard.obj || firstCard.obj.val == true || secondCard.obj.val == true) {
+                setTimeout(function() {
+                    flip(firstCard, secondCard);
+                }, 500);
+                compareArr.splice(0,2);
+                return;
+            }
+
+            // 색깔 비교
+            if(cardLevel== 'level1' || cardLevel == 'level2') {
+                // console.log(cardLevel);
+                if(firstCard.obj.number == secondCard.obj.number) {
+                    firstCard.obj.val = true;
+                    secondCard.obj.val = true;
+                    ++score;
+                    document.getElementById('scoreBoard').innerText = `점수 : ${score}`;
+                } else {
+                    setTimeout(function() {
+                        flip(firstCard, secondCard);
+                    }, 700);
+                }
+            } else {
+                if(firstCard.obj.color == secondCard.obj.color && firstCard.obj.number == secondCard.obj.number) {
+                    firstCard.obj.val = true;
+                    secondCard.obj.val = true;
+                    ++score;
+                    document.getElementById('scoreBoard').innerText = `점수 : ${score}`;
+                } else {
+                    setTimeout(function() {
+                        flip(firstCard, secondCard);
+                    }, 700);
+                }
+            }
+            compareArr.splice(0,2);
+        }
+
+        /** 선택한 카드가 false면 뒤집어 주는 함수 */
+        function flip(firstCard, secondCard) {
+            console.log("카드 안맞아요 뒤집으세요");
+            if(firstCard.obj.val == false) {
+                firstCard.imgTag.setAttribute('src', backPath);
+            }
+            if(secondCard.obj.val == false) {
+                secondCard.imgTag.setAttribute('src', backPath);
+            }
+        }
+
+        /** 배열에서 일치하는 카드 객체를 반환하는 함수 */
+        function cardArrReturn(tag, cardArr) {
+            for (let i=0; i<cardArr.length; i++) {
+                    if(tag.id == cardArr[i].id) {
+                        return cardArr[i];
+                    }
+                }
+        }
+    </script>
+</body>
+</html>
