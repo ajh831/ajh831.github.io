@@ -49,7 +49,7 @@
     <script src="https://kit.fontawesome.com/f0e73cfa04.js" crossorigin="anonymous"></script>
 
 </head>
-<audio id="audioPlay" src="https://ajh831.github.io/00.music/button-11.mp3"></audio>
+<audio id="audioPlay" src="https://ajh831.github.io/00.music/button-11.mp3" onloadstart="this.volume=0.3" autoplay></audio>
 <body>
     <section>
         <div class="cardGameTitle">
@@ -74,7 +74,7 @@
 
     function clickSound() {
         let audioSound = document.getElementById('audioPlay');
-
+        audioSound.volume = 0.3;
         audioSound.currentTime = 0;
         audioSound.play();
     }
