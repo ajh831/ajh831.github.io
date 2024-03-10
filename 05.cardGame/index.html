@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Hi+Melody&display=swap" rel="stylesheet">
+    <style>
+        * {margin: 0; padding: 0; border: 0; font-family: "Hi Melody", sans-serif; font-size: 1.2em;}
+        body {width: 100vw; height: 100vh; position: relative; background: url('../../00.img/backgroud.jpg'); background-size: 100% 100%; background-position: center;}
+        /* section {width: 50%; height: 100%; background-color: rgba(255, 0, 0, .1); float: left;} */
+        section:first-of-type{width: 50%; height: 50%; display: inline-flex; flex-direction: column;
+            float: left; position: absolute; left:50%; top:40%; transform: translate(-50%,-50%); justify-content: space-evenly; text-align: center;
+            font-size: 200%; font-weight: bold; color: rgb(243, 170, 11); text-shadow: 1px 1px 5px rgba(255, 145, 0, 0.75);}
+        .startWindow {width: 800px; height: 100px;
+            position: absolute;
+            left: 50%; top:60%; transform: translate(-50%,-50%);
+            display: flex; flex-direction: column; align-items: center; justify-content: space-between;
+            /* background-color: white; */
+        }
+        button {
+            margin: 20px;
+            width: 200px;
+            height: 50px;
+            color: black;
+            border-radius: 50px;
+            font-size: 0.8em;
+            moz-transition: all .4s ease-in-out;
+            -o-transition: all .4s ease-in-out;
+            -webkit-transition: all .4s ease-in-out;
+            transition: all .4s ease-in-out;
+            background-image: linear-gradient(to right, #25aae1, #40e495, #30dd8a, #2bb673);
+            box-shadow: 0 4px 15px 0 rgba(49, 196, 190, 0.75);
+        }
+
+        button:hover {
+            cursor: pointer;
+            transform: scale(1.08);
+            moz-transition: all .4s ease-in-out;
+            -o-transition: all .4s ease-in-out;
+            -webkit-transition: all .4s ease-in-out;
+            transition: all .4s ease-in-out;
+        }
+        button:active {
+            cursor: grab;
+        }
+    </style>
+    <script src="https://kit.fontawesome.com/f0e73cfa04.js" crossorigin="anonymous"></script>
+
+</head>
+<audio id="audioPlay" src="../../00.music/button-11.mp3"></audio>
+<body>
+    <section>
+        <div class="cardGameTitle">
+            <i class="fa-solid fa-heart" style="color: red; font-size: 60px;""></i>
+            카드</span> <span style="color: rgb(255, 126, 126);">짝 맞추기</span> 게임
+            <i class="fa-solid fa-diamond" style="color: black; font-size: 50px;"></i>
+        </div>
+    </section>
+    <div class="startWindow">
+        <div>
+            <button class="startBtn" onclick="location.href='./cardGame_v.0.6.html'">게임시작</button>
+            <button class="startBtn" onclick="location.href='./howToPlay.html'">게임설명</button>
+        </div>
+    </div>
+</body>
+<script>
+    document.addEventListener('click', function(event) {
+        if (event.target.classList.contains('startBtn')) {
+            clickSound();
+        }
+    });
+
+    function clickSound() {
+        let audioSound = document.getElementById('audioPlay');
+
+        audioSound.currentTime = 0;
+        audioSound.play();
+    }
+</script>
+</html>

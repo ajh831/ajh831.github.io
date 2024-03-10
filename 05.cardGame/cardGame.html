@@ -24,25 +24,25 @@
 
         body {width: 100vw; height: 100vh; position: relative; background: url('https://ajh831.github.io/00.img/backgroud.jpg'); background-size: 100% 100%; background-position: center;}
         .startWindow {width: 90%; height: 90%; position: absolute; left:50%; top:50%; transform: translate(-50%,-50%);}
-        section {width: 100%; height: 50%; display: inline-flex; flex-direction: column;
+        section {width: 100%; height: 60%; display: inline-flex; flex-direction: column;
             float: left; position: absolute; left:50%; top:50%; transform: translate(-50%,-50%); justify-content: space-evenly;}
-        .startBtn {width: 50%; height: 15%; left:50%; top:50%; flex-direction: row;justify-content: space-evenly; text-align: center;}
-        .container {pointer-events : auto; font-size: 1em;}
+        .startBtn {width: 500px; height: 50px; left:50%; top:50%; flex-direction: row;justify-content: space-evenly; text-align: center;background-image: linear-gradient(to right, #25aae1, #40e495, #30dd8a, #2bb673);}
+        .container {pointer-events : auto; font-size: 1em; width: 100%; height: 100%;}
         .btnClass {width: 100%; height: 400px; display: inline; left:50%; top:50%; flex-direction: row; text-align : center; justify-content: space-evenly;}
-        .playBtn {width: 20%; height: 10%; background-color:gainsboro;}
+        .playBtn {width: 200px; height: 50px; background-color:gainsboro; background-image: linear-gradient(to right, #25c5e1, #40e4bb, #30d7dd, #2b9ab6);}
         .finishWindow {width: 90%; height: 90%; background-color: rgba(255, 255, 255, 0.8); position: absolute; left:50%; top:50%; transform: translate(-50%,-50%);text-align : center;}
         section:last-child {position: absolute; left:50%; top:50%; transform: translate(-50%,-50%); align-items: center;}
+        .musicIcon { background-color: transparent !important; border: none; }
         button {
             /* border: 1px black solid; */
             color: black;
             border-radius: 50px;
             font-size: 0.8em;
-            border-radius: 50px;
             moz-transition: all .4s ease-in-out;
             -o-transition: all .4s ease-in-out;
             -webkit-transition: all .4s ease-in-out;
             transition: all .4s ease-in-out;
-            background-image: linear-gradient(to right, #25aae1, #40e495, #30dd8a, #2bb673);
+            /* background-image: linear-gradient(to right, #25aae1, #40e495, #30dd8a, #2bb673); */
             box-shadow: 0 4px 15px 0 rgba(49, 196, 190, 0.75);
         }
 
@@ -62,13 +62,18 @@
         /* span {background-color: white; position: absolute; left:50%; transform: translate(-50%);} */
         .board {width: 70%; height: 70%; position: absolute; left:50%; top:50%; transform: translate(-50%,-50%);}
     </style>
+    <script src="https://kit.fontawesome.com/f0e73cfa04.js" crossorigin="anonymous"></script>
+
 </head>
 <body>
+    <audio id="audioPlay" src="https://ajh831.github.io/00.music/button-11.mp3"></audio>
+    <audio id="audioPlayBackGroud" src="https://ajh831.github.io/00.music/sunflower-street-drumloop-85bpm-163900.mp3" autoplay loop></audio>
     <div class="startWindow">
         <section>
-            <button class="startBtn" id="level3" value=false>게임시작(난이도:상)</button>
-            <button class="startBtn" id="level2" value=false>게임시작(난이도:중)</button>
-            <button class="startBtn" id="level1" value=false>게임시작(난이도:하)</button>
+            <button class="startBtn" id="level3" value=false>난이도 : 상</button>
+            <button class="startBtn" id="level2" value=false>난이도 : 중</button>
+            <button class="startBtn" id="level1" value=false>난이도 : 하</button><br>
+            <button class="startBtn" id="main" onclick="location.href='./index.html'">시작화면으로 돌아가기</button>
         </section>
     </div>
     <div class="container">
@@ -77,11 +82,13 @@
             <button class="playBtn" id="finish" disabled>게임종료</button>
             <button class="playBtn" id="show" disabled></button>
             <button class="playBtn" id="shuffle" value=false; disabled></button>
+            <!-- <span id="playGameTime">sdf</span> -->
+            <span id="playTime"></span>
             <span id="scoreBoard"></span>
-        </div>
-        <div id="board">
             
         </div>
+        <div id="board">
+`        </div>
     </div>
     <div class="finishWindow">
         <section>
@@ -90,6 +97,8 @@
     </div>
     <script>
         let gameTime = 10; // 게임시작 시 카드를 볼 수 있는 시간(카운트다운)
+        let min = 1; // 게임 진행 시간(분)
+        let sec = 59; // 게임 진행 시간(초)
         let counter; // setInterval함수 적용
         let cardArr = []; // 카드 정보를 담는 배열
         let defaultpath = 'https://ajh831.github.io/00.img/card_img/'; // 이미지가 담긴 경로 기본값
@@ -107,8 +116,11 @@
         let hintNum = 3; // 힌트 보기 한도
         let cardsNumber = 52; // 카드의 개수를 정하기 위한 변수
         let cardLevel = 'level1';
+        let falseCnt = 5; // 짝 맞추기 실패한 횟수
         
         window.onload = function() {
+            backGroundSound();
+
             let startGame = document.getElementsByClassName('startBtn');
             // let flipBtn = document.getElementById('hide');
             let finishBtn = document.getElementById('finish');
@@ -125,27 +137,73 @@
             // startGame.onclick = gamePlay;
             gameLevel(startGame);
 
-            // 1. 배열 초기화
+            // 배열 초기화
             boardCard();
 
-            // 2. 배열 화면에 보여주기
-            // suffleCard();
+            // 게임 플레이 시간 카운트
 
-            // 3. 배열 뒤집기
-            // flipBtn.onclick = flipAll;
+            // 배열 뒤집기
             finishBtn.onclick = finishGame;
             showAllBtn.onclick = hintCard;
             suffleBtn.onclick = suffleBtnFc;
+        }
+
+        // 클릭 효과음 주기
+        document.addEventListener('click', function(event) {
+        if (event.target.classList.contains('startBtn') || event.target.classList.contains('playBtn')) {
+            clickSound();
+        }
+        });
+
+        function clickSound() {
+            let audioSound = document.getElementById('audioPlay');
+            audioSound.volume = 0.25;
+            audioSound.currentTime = 0;
+            audioSound.play();
+        }
+
+        function backGroundSound() {
+            let audioSoundBackGround = document.getElementById('audioPlayBackGroud');
+            audioSoundBackGround.volume = 0.25;
+            audioSoundBackGround.currentTime = 0;
+            audioSoundBackGround.play();
         }
         
         /** 플레이어 입력받기 */
         // 1. 이름을 입력받아서 저장
         // 2. 시간과 점수를 저장
 
+        /** 플레이 시간 카운트 */
+        // function playTimeCount(cardLevel) {
+        //     allSec = 120; // 120초
+        //     if(cardLevel == 'level1') {
+        //         min = 0;
+        //     } else if(cardLevel == 'level2') {
+        //         sec = 30;
+        //     }
+
+        //     counter = setInterval(function() {
+        //         if(min <= 0) {
+        //             min = 1;
+        //         }
+        //         if(sec <= 0) {
+        //             sec = 59;
+        //         }
+        //         allSec--;
+        //         document.getElementById('playTime').innerText = `0${min--}:${sec--}`;
+        //         playTimeCountDown()}, 120000);
+        // }
+
+        // function playTimeCountDown() {
+        //     if(allSec<0) {
+        //         finishGame();
+        //     }
+        // }
+
 
         /** 게임시작 난이도 고르는 함수*/
         function gameLevel(startGame) {
-            for(let i=0; i<startGame.length;i++) {
+            for(let i=0; i<startGame.length-1;i++) {
                 startGame[i].onclick = function(e) {
                 let element = e.target;
                 if(element.id == 'level1') {
@@ -153,6 +211,7 @@
                     gameTime = 5;
                     shuffleNum = 3;
                     hintNum = 1;
+                    falseCnt = 3
                 } else {
                     cardsNumber = 52;
                 }
@@ -181,6 +240,7 @@
             // 카운트 다운하는 함수
             countDown(element);
             containerDisplay.style.display = 'block';
+            
         }
         
         /** 카운트 다운을 실행하는 함수 */
@@ -231,11 +291,8 @@
         }
 
         /** 카드 배열을 섞어주는 함수 */
-        function suffleCard(e) {
-            cardArr.sort(function(a,b){
-                return Math.random() - 0.5;
-            });
-
+        function suffleCard() {
+            cardArr.sort(() =>  Math.random() - 0.5);
             showCard();
         }
 
@@ -276,19 +333,20 @@
             finishButtonClick = true;
             flipAll();
             gameTime = 3;
-            
+
             counter = setInterval(function() {
                 finishDisplay.lastElementChild.innerText = `게임을 종료합니다.\n${gameTime--}`;
-                shutDown(gameTime)}, 3000);
+                shutDown(gameTime)}, 1000);
                 
         }
+
         
         /** 게임 종료 카운트 다운*/
         function shutDown(gameTime) {
             if(gameTime < 0) {
                 finishDisplay.style.display = 'none';
                 clearInterval(counter);
-                location.reload();
+                location.replace('./index.html');
                 return;
             }
         }
@@ -390,29 +448,41 @@
                 return;
             }
             document.getElementById('scoreBoard').style.color = "black";
-            // 색깔 비교
-            if(cardLevel== 'level1' || cardLevel == 'level2') {
+            // 점수계산
+            if(cardLevel== 'level1' || cardLevel == 'level2') { // 난이도 하/중을 고른경우
                 // console.log(cardLevel);
                 if(firstCard.obj.number == secondCard.obj.number) {
                     firstCard.obj.val = true;
                     secondCard.obj.val = true;
                     ++score;
-                    document.getElementById('scoreBoard').innerText = `점수 : ${score}`;
                 } else {
+                    --falseCnt;
                     setTimeout(function() {
                         flip(firstCard, secondCard);
                     }, 700);
                 }
-            } else {
+                document.getElementById('scoreBoard').innerText = `기회 : ${falseCnt}, 점수 : ${score}`;
+
+                if(falseCnt == 0) {
+                    finishGame();
+                }
+
+            } else { // 난이도 상을 고른경우
                 if(firstCard.obj.color == secondCard.obj.color && firstCard.obj.number == secondCard.obj.number) {
                     firstCard.obj.val = true;
                     secondCard.obj.val = true;
                     ++score;
-                    document.getElementById('scoreBoard').innerText = `점수 : ${score}`;
                 } else {
+                    --falseCnt;
                     setTimeout(function() {
                         flip(firstCard, secondCard);
                     }, 700);
+                }
+
+                document.getElementById('scoreBoard').innerText = `기회 : ${falseCnt}, 점수 : ${score}`;
+
+                if(falseCnt == 0) {
+                    finishGame();
                 }
             }
             compareArr.splice(0,2);

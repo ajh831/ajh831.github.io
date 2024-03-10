@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Hi+Melody&display=swap" rel="stylesheet">
+    <style>
+        * {margin: 0; padding: 0; border: 0; font-family: "Hi Melody", sans-serif; font-size: 1.2em;}
+        body {width: 100vw; height: 100vh; position: relative; background: url('../../00.img/backgroud.jpg'); background-size: 100% 100%; background-position: center;}
+        /* section {width: 50%; height: 100%; background-color: rgba(255, 0, 0, .1); float: left;} */
+        section:first-of-type{width: 60%; height: 70%; display: inline-flex; flex-direction: column;
+            float: left; position: absolute; left:50%; top:40%; transform: translate(-50%,-50%); justify-content: space-evenly; text-align: center;
+            background-color: rgba(255, 255, 255, 0.7);
+            font-size: 20px; font-weight: bold; color: black;}
+        .startWindow {width: 800px; height: 100px;
+            position: absolute;
+            left: 50%; top:85%; transform: translate(-50%,-50%);
+            display: flex; flex-direction: column; align-items: center; justify-content: space-between;
+        }
+        .nextPage {
+            width: 25px; height: 25px;
+            position: absolute;
+            left: 65%; top:70%; transform: translate(-50%,-50%);
+        }
+        .next {
+            width: 50px;
+            float: left; position: absolute; left:50%; transform: translate(-50%,-50%); justify-content: space-evenly; text-align: center;
+        }
+        .next:hover {
+            cursor: pointer;
+        }
+        .next:active {
+            cursor: grab;
+        }
+        button {
+            margin: 20px;
+            width: 200px;
+            height: 50px;
+            color: black;
+            border-radius: 50px;
+            font-size: 0.8em;
+            moz-transition: all .4s ease-in-out;
+            -o-transition: all .4s ease-in-out;
+            -webkit-transition: all .4s ease-in-out;
+            transition: all .4s ease-in-out;
+            background-image: linear-gradient(to right, #25aae1, #40e495, #30dd8a, #2bb673);
+            box-shadow: 0 4px 15px 0 rgba(49, 196, 190, 0.75);
+        }
+
+        button:hover {
+            cursor: pointer;
+            transform: scale(1.08);
+            moz-transition: all .4s ease-in-out;
+            -o-transition: all .4s ease-in-out;
+            -webkit-transition: all .4s ease-in-out;
+            transition: all .4s ease-in-out;
+        }
+        button:active {
+            cursor: grab;
+        }
+    </style>
+</head>
+<body>
+    <audio id="audioPlay" src="../../00.music/button-11.mp3"></audio>
+
+    <section>
+        <div class="howToPlay">
+            <p>
+                본 게임은 <span style="color: red;">카드의 짝</span>을 맞추는 게임입니다.
+            </p><br>
+            <p>
+                - 난이도 : 상 - 
+            </p>
+            <p style="font-size: 20px;">
+                52개 카드 중 동일한
+                <span style="color: red;">카드 번호</span>
+                &
+                <span style="color: red;">카드 색상</span>
+                을 동시에 맞추면 정답입니다.
+            </p><br>
+            <p>
+                - 난이도 : 중 - 
+            </p>
+            <p style="font-size: 20px;">
+                52개 카드 중 동일한
+                <span style="color: red;">카드 번호</span>
+                를 동시에 맞추면 정답입니다.
+            </p><br>
+            <p>
+                - 난이도 : 하 - 
+            </p>
+            <p style="font-size: 20px;">
+                26개 카드 중 동일한
+                <span style="color: red;">카드 번호</span>
+                를 맞추면 정답입니다.
+            </p><br><br>
+            <p class="next" style="text-decoration: underline; font-size: 20px;" data-value="next">다음</p>
+        </div>
+    </section>
+    <div class="startWindow">
+        <div>
+            <button class="startBtn" id="level1" onclick="location.href='./index.html'">돌아가기</button>
+        </div>
+    </div>
+    <script>
+        let howToPlayWindow = document.getElementsByClassName('howToPlay');
+        let tmp;
+        
+        window.onload = function() {
+            let howTo = document.getElementsByClassName('next')[0];
+
+            howTo.onclick = explainGame;
+        }
+
+        function clickSound() {
+            let audioSound = document.getElementById('audioPlay');
+            audioSound.volume = 0.3;
+            audioSound.currentTime = 0;
+            audioSound.play();
+        }
+
+        document.addEventListener('click', function(event) {
+            if (event.target.classList.contains('next')) {
+                explainGame.call(event.target);
+                clickSound();
+
+            }
+        });
+
+        function explainGame() {
+            if(this.dataset.value == "next") {
+                tmp = howToPlayWindow[0].innerHTML;
+                howToPlayWindow[0].innerHTML = (
+                `
+                <p>
+                - 난이도 : 상 - 
+                </p>
+                <p style="font-size: 20px;">
+                    짝을
+                    <span style="color: red;"> 5번</span>
+                    맞추지 못할 경우 게임이 종료됩니다.
+                </p><br>
+                <p>
+                    - 난이도 : 중 - 
+                </p>
+                <p style="font-size: 20px;">
+                    짝을
+                    <span style="color: red;"> 5번</span>
+                    맞추지 못할 경우 게임이 종료됩니다.
+                </p><br>
+                <p>
+                    - 난이도 : 하 - 
+                </p>
+                <p style="font-size: 20px;">
+                    짝을
+                    <span style="color: red;"> 3번</span>
+                    맞추지 못할 경우 게임이 종료됩니다.
+                </p><br><br>
+                <p class="next" style="text-decoration: underline; font-size: 20px;" data-value="back">이전</p>
+                `);
+                this.dataset.value = "back";
+            } else {
+                howToPlayWindow[0].innerHTML = tmp;
+            }
+        }
+        
+    </script>
+</body>
+</html>
