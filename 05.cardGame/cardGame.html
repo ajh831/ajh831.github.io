@@ -78,7 +78,7 @@
             <button class="startBtn" id="main" onclick="location.href='./index.html'">시작화면으로 돌아가기</button>
         </section>
     </div>
-    <div class="container">
+    <div class="container" style="display:none">
         <div class="btnClass">
             <!-- <button class="playBtn" id="hide" disabled>뒤집기</button> -->
             <button class="playBtn" id="finish" disabled>게임종료</button>
@@ -92,7 +92,7 @@
         <div id="board">
 `        </div>
     </div>
-    <div class="finishWindow">
+    <div class="finishWindow" style="display:none">
         <section>
             게임을 종료합니다.
         </section>
@@ -133,8 +133,6 @@
             playBtn[1].innerText = `힌트보기\n(기회:${hintNum}번)`
             playBtn[2].innerText = `섞기\n(기회:${shuffleNum}번)`
             
-            containerDisplay.style.display = 'none';
-            finishDisplay.style.display = 'none';
             // 게임 시작
             // startGame.onclick = gamePlay;
             gameLevel(startGame);
